@@ -1,0 +1,94 @@
+#!/usr/bin/bash
+echo "histore purge"
+if [ -z "$lastCMD" ]; then
+  if [ -z "$SHELLSTARTED" ]; then
+    export SHELLSTARTED="1";
+  else
+    echo -e "purgehistory_core: Error 1: \$lastCMD is empty";
+  fi
+  exit 1
+elif [ ! -z "$HISTPURGEFAIL" ]; then
+  exit 2
+fi
+#phc_debug=1
+lock="/tmp/.lock-historypurge"
+exec 31>$lock
+flock --timeout 5 31 || exit 1
+
+free_(){
+  rm -rf $lock
+  rm -rf $tmp_before
+  rm -rf $tmp_after
+  flock -u 31
+  exec 31>&-
+}
+error(){
+  case "$1" in
+    "2") echo -e "Error 2: purgehistory_core: Critical failue.\nCould not run pcregrep (probably). Will not try again this session."
+         export HISTPURGEFAIL="2"
+ ;; "3") echo -e "purgehistory_core: Error 3: $HISTFILE is empty"
+ ;; "4") echo -e "purgehistory_core: Error 4: failed: cp $HISTFILE $tmp_before\nPerhaps $tmp_before already exists."
+ ;; "5") echo -e "purgehistory_core: Error 5: $tmp_before is empty"
+ ;; "6") echo -e "purgehistory_core: Error 6: $tmp_after is empty"
+ ;; *) echo "Not an error(yet), a typo" ;;
+  esac
+  free_
+  unset -f error
+  unset -f free_
+  return $(($1))
+}
+isempty(){
+  if [[ -f $1 ]]; then
+    if [[ -s $1 ]]; then
+      if cat $1 2>/dev/null > /tmp/temp_file_prime ; then
+        return 1;
+      fi
+    fi
+  fi
+  return 0;
+}
+
+if [ -z "$1" ]; then
+  core_regex="#\d{10}\s[^#\s].*"
+else
+  core_regex="#\d{10}\s(?!$1)[^#\s].*"
+fi
+if [ ! -z "$phc_debug" ]; then
+  echo "debugging"
+  echo "$core_regex"
+fi
+
+
+tmp_before="/tmp/.hist_before"
+tmp_after="/tmp/.hist_after"
+if isempty $HISTFILE; then
+  error 3
+  exit 3
+fi
+if ! cp $HISTFILE $tmp_before; then
+  error 4
+  exit 4
+fi
+if isempty $tmp_before; then
+  error 5
+  exit 5
+fi
+
+
+if cat $tmp_before | pcre2grep -M "$core_regex" | tac | awk '!seen[$0]++' | tac > $tmp_after; then
+  if [ ! -z "$phc_debug" ]; then :
+  elif isempty $tmp_after; then
+    error 6
+    exit 6
+  else
+    mv $tmp_after $HISTFILE
+    history -c
+    history -r
+  fi
+else
+  error 2
+  exit 2
+fi
+free_
+unset -f error
+unset -f free_

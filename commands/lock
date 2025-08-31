@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ! -z "$1" ]; then
+    if stat /dev/mapper/$1 &> /dev/null; then
+        sudo umount /dev/mapper/$1
+        sudo cryptsetup luksClose $1
+    else
+        echo "already locked"
+    fi
+else
+    echo "Please enter the partition label of the disk you wish to lock."
+fi

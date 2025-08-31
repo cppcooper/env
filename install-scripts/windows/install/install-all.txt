@@ -1,0 +1,2 @@
+/d/,files/,new-system/install/install_drivers.sh;
+/d/,files/,new-system/install/install_base.sh;/d/,files/,new-system/install/install_fonts.sh;/d/,files/,new-system/install/install_media.sh;/d/,files/,new-system/install/install_comms.sh;/d/,files/,new-system/install/install_gaming.sh;/d/,files/,new-system/install/install_dev.sh

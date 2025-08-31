@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ! -z "$1" ]; then
+    if stat /dev/mapper/$1 &> /dev/null; then
+        echo "already unlocked"
+    else
+        if sudo cryptsetup luksOpen /dev/disk/by-partlabel/$1 $1; then
+            sudo mount /dev/mapper/$1
+        fi
+    fi
+else
+    echo "Please enter the partition label of the disk you wish to unlock."
+fi

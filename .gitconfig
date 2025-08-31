@@ -1,0 +1,44 @@
+[safe]
+	directory = /github/workspace
+[core]
+#	editor = subl
+	editor = nano
+	autocrlf = false
+	filemode = false
+	excludesFile = ~/.gitignore_global
+[user]
+	email = cooper.s.josh@outlook.com
+	name = Joshua Cooper
+#[credential]
+#	helper = wincred
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[winUpdater]
+	recentlySeenVersion = 2.18.0.windows.1
+[pull]
+#	rebase = true
+[mergetool "smerge"]
+	cmd = smerge mergetool \"$BASE\" \"$LOCAL\" \"$REMOTE\" -o \"$MERGED\"
+	trustExitCode = true
+	prompt = false
+[merge]
+	tool = smerge
+	conflictstyle = merge
+	ff = false
+	prompt = false
+[difftool "smerge"]
+	path = C:/Program Files/Sublime Merge/smerge.exe
+	trustExitCode = false
+[diff]
+	tool = smerge
+	guitool = smerge
+	prompt = false
+[difftool]
+	prompt = false
+[advice]
+	detachedHead = false
+[submodule]
+#	recurse = true

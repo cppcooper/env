@@ -1,0 +1,15 @@
+#!/bin/sh
+file="$@"
+
+if [[ -f "$file" || -d "$file" ]]; then
+    source=$(readlink -f "$file")
+    dest="/restore$source"
+    mkdir --parents $(dirname $dest)
+    if cp --preserve=all $source $dest -R; then
+        echo "wrote file out to '/restore$source'"
+    else
+        echo "couldn't write file(s)"
+    fi
+else
+    echo "no such file"
+fi

@@ -1,0 +1,28 @@
+#!/bin/bash
+host=$(hostname)
+
+function restore(){
+    source="$1"
+    dest="${source#/restore}"
+    #echo "$source -> $dest"
+    if [[ -f "$source" ]]; then
+        mkdir --parents "$(dirname $dest)"
+        if cp --preserve=all $source $dest; then
+            echo "restored: $dest"
+        else
+            return 1;
+        fi
+    else
+        echo "no such file: \"$file\""
+    fi
+}
+count=0
+skipped=0
+for file in $(find /restore -not -type d -iwholename "*$1*"); do
+    if restore $file; then
+        ((count++))
+    else
+        ((skipped++))
+    fi
+done
+echo "restored $count files, skipped $skipped"

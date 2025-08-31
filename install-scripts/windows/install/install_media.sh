@@ -1,0 +1,10 @@
+cd "${BASH_SOURCE%/*}"
+source ./installer-functions.bash
+install xnview
+install xnviewmp
+install ffmpeg
+install cccp
+install vlc
+install mpc-hc
+install spotify
+install cdburnerxp

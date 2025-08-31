@@ -1,0 +1,17 @@
+#!/bin/sh
+if [[ -n "$WINDIR" ]];
+then
+    tasklist | grep --ignore-case $1 | awk '{print $1}' | while read -r name
+    do
+        taskkill //F //IM "$name"
+    done
+else
+    ps ax | grep --ignore-case $1 | grep -v grep | grep -v robokill | awk '{print $1}' | while read -r pid
+    do
+        if kill $pid; then
+            echo "Terminated: $pid"
+        else
+            echo "Error: $pid"
+        fi
+    done
+fi

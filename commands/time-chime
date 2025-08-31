@@ -1,0 +1,12 @@
+#!/bin/bash
+cd $(dirname $0)
+if [ "$1" = "hourly" ]; then
+    hours=$(date +"%l")
+    div=$((hours/3))
+    mod=$((hours%3))
+    beep -l 75 -f 300 -D 500 -r $div
+    beep -l 25 -f 850 -D 50 -r $mod
+elif [ "$1" = "quarterly" ]; then
+    count=$(($(date +%M) / 15))
+    beep -l 15 -D 150 -f 1515 -r $count
+fi
