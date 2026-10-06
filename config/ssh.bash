@@ -27,16 +27,16 @@ then
   if ((sshcount == 0))
   then
     debug_ "user has no ssh-agents open"
-    start-ssh-agent --keep
+    ssh-start-agent --keep
                    #--keep micro-optimization
   else
     debug_ "attempting to connect to the ssh-agent referenced inside agent.sh"
-    connect-ssh-agent 1> /dev/null
+    ssh-connect-agent 1> /dev/null
                    #  we want to display the connection info at the end, so we save it
     if ssh-add -l 2>&1 | grep "Error" &> /dev/null
     then
       debug_ "ssh agent not connected or started"
-      start-ssh-agent 1> /dev/null
+      ssh-start-agent 1> /dev/null
     elif windows
     then
       debug_ "Okay, we are connected to an agent but let's check that it is the PID inside agent.sh"
@@ -53,10 +53,10 @@ then
       if ((PID == 0))
       then
         debug_ "Could not find PID from agent.sh"
-        start-ssh-agent --keep 1> /dev/null
+        ssh-start-agent --keep 1> /dev/null
       fi
     fi
-    print-ssh-connection-info
+    ssh-print-connection-info
   fi
 fi
 if ! windows; then

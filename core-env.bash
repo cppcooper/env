@@ -15,6 +15,7 @@ else
     uPATH="$HOME/bin:$uPATH"
     uPATH="$HOME/scripts:$uPATH"
     uPATH="$HOME/commands:$uPATH"
+    uPATH="$HOME/.local/bin:$uPATH"
 fi
 # The stuff in these directories *probably* don't work on both linux/windows
 uPATH="$ROOTDIR/bin:$uPATH"

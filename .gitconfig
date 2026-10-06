@@ -5,7 +5,7 @@
 	editor = nano
 	autocrlf = false
 	filemode = false
-	excludesFile = ~/.gitignore_global
+	excludesfile = /home/jcooper/.gitignore_global
 [user]
 	email = cooper.s.josh@outlook.com
 	name = Joshua Cooper
@@ -27,7 +27,7 @@
 [merge]
 	tool = smerge
 	conflictstyle = merge
-	ff = false
+#	ff = false
 	prompt = false
 [difftool "smerge"]
 	path = C:/Program Files/Sublime Merge/smerge.exe

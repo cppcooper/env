@@ -18,7 +18,7 @@ get-pid() {
   fi
 }
 
-kill-ssh-agent(){
+ssh-kill-agent(){
   for pid in $(get-agents | get-pid)
   do
     if windows; then
@@ -29,7 +29,7 @@ kill-ssh-agent(){
   done
 }
 
-print-ssh-connection-info(){
+ssh-print-connection-info(){
   echo $SSH_AUTH_SOCK
   if windows;then
     echo Agent winpid $(ps | grep $SSH_AGENT_PID | grep -v grep | awk '{print $4}')
@@ -40,7 +40,7 @@ print-ssh-connection-info(){
   ssh-add -l
 }
 
-connect-ssh-agent(){
+ssh-connect-agent(){
   if [ -f ~/.ssh/agent.sh ]
   then
     debug_ "running agent.sh"
@@ -53,7 +53,7 @@ connect-ssh-agent(){
   fi
 }
 
-start-ssh-agent(){
+ssh-start-agent(){
   debug_ "start_ssh_agent arguments: '$@'"
   if [[ "$@" != '--keep' ]]
   then
@@ -72,7 +72,7 @@ start-ssh-agent(){
   reformat-agentsh
 }
 
-reformat-agentsh(){
+ssh-reformat-agentsh(){
   Line1="SSH_AUTH_SOCK=$SSH_AUTH_SOCK; export SSH_AUTH_SOCK;"
   Line2="SSH_AGENT_PID=$SSH_AGENT_PID; export SSH_AGENT_PID;"
   if windows
