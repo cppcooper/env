@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Resolve ROOTDIR relative to commands/
+ROOTDIR=$HOME/env
+
+# Initialize or reconnect to the SSH agent
+source "$ROOTDIR/config/ssh.bash"
+
+# Launch Sublime Merge
+exec /opt/sublime_merge/sublime_merge "$@"
