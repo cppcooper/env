@@ -17,9 +17,9 @@ then
   # we need to check a number of things. (and that it works on windows)
   # Check:
   #   that there is at least one agent running
-  #   that the running agent is referenced inside agent.sh
-  # If it is not the agent referenced inside agent.sh the user may have multiple running
-  for pid in $(get-agents | get-pid)
+  #   that the running agent is referenced inside agent.env
+  # If it is not the agent referenced inside agent.env the user may have multiple running
+  for pid in $(ssh-get-agents | get-pid)
   do
     ((sshcount++))
   done
@@ -30,7 +30,7 @@ then
     ssh-start-agent --keep
                    #--keep micro-optimization
   else
-    debug_ "attempting to connect to the ssh-agent referenced inside agent.sh"
+    debug_ "attempting to connect to the ssh-agent referenced inside agent.env"
     ssh-connect-agent 1> /dev/null
                    #  we want to display the connection info at the end, so we save it
     if ssh-add -l 2>&1 | grep "Error" &> /dev/null
@@ -39,20 +39,20 @@ then
       ssh-start-agent 1> /dev/null
     elif windows
     then
-      debug_ "Okay, we are connected to an agent but let's check that it is the PID inside agent.sh"
+      debug_ "Okay, we are connected to an agent but let's check that it is the PID inside agent.env"
       PID=0
       for pid in $(get-agents | get-pid)
       do
         if [[ $pid == $SSH_AGENT_WINPID ]]
         then
-          debug_ "PID from agent.sh is running"
+          debug_ "PID from agent.env is running"
           PID=$pid
           break
         fi
       done
       if ((PID == 0))
       then
-        debug_ "Could not find PID from agent.sh"
+        debug_ "Could not find PID from agent.env"
         ssh-start-agent --keep 1> /dev/null
       fi
     fi

@@ -2,7 +2,7 @@
 FUNCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source $FUNCDIR/scripting.bash
 
-get-agents() {
+ssh-get-agents() {
   if windows; then
     tasklist //V | grep ssh-agent | grep $(whoami)
   else
@@ -19,12 +19,14 @@ get-pid() {
 }
 
 ssh-kill-agent(){
-  for pid in $(get-agents | get-pid)
+  ssh-get-agents
+  for pid in $(ssh-get-agents | get-pid)
   do
     if windows; then
       taskkill //F //PID $pid
     else
-      kill $pid
+      echo kill -9 $pid
+      kill -9 $pid
     fi
   done
 }
@@ -41,14 +43,14 @@ ssh-print-connection-info(){
 }
 
 ssh-connect-agent(){
-  if [ -f ~/.ssh/agent.sh ]
+  if [ -f ~/.ssh/agent.env ]
   then
-    debug_ "running agent.sh"
-    . ~/.ssh/agent.sh 2>&1 >/dev/null
+    debug_ "injecting agent.env"
+    . ~/.ssh/agent.env 2>&1 >/dev/null
     #print-ssh-connection-info
   else
     debug_ "agent.sh doesn't exist"
-    touch ~/.ssh/agent.sh
+    touch ~/.ssh/agent.env
     #echo "Critical Error: ~/.ssh/agent.sh does not exist"
   fi
 }
@@ -60,19 +62,20 @@ ssh-start-agent(){
     debug_ "killing existing agents"
     if [[ "$@" == '--silent' ]]
     then
-      kill-ssh-agent &> /dev/null
+      ssh-kill-agent &> /dev/null
     else
-      kill-ssh-agent
+      ssh-kill-agent
     fi
   else
     debug_ "keeping existing agents"
   fi
-  ssh-agent > ~/.ssh/agent.sh
-  connect-ssh-agent #run it
-  reformat-agentsh
+  ssh-agent > ~/.ssh/agent.env
+  #chmod +x ~/.ssh/agent.sh
+  ssh-connect-agent #run it
+  ssh-reformat-agentinfo
 }
 
-ssh-reformat-agentsh(){
+ssh-reformat-agentinfo(){
   Line1="SSH_AUTH_SOCK=$SSH_AUTH_SOCK; export SSH_AUTH_SOCK;"
   Line2="SSH_AGENT_PID=$SSH_AGENT_PID; export SSH_AGENT_PID;"
   if windows
@@ -83,7 +86,7 @@ ssh-reformat-agentsh(){
   Line4="echo Agent winpid $SSH_AGENT_WINPID;"
   Line5="echo Agent pid $SSH_AGENT_PID;"
   debug_ "$Line1\n$Line2\n$Line3\n$Line4\n$Line5\n"
-  printf "$Line1\n$Line2\n$Line3\n$Line4\n$Line5\n" > ~/.ssh/agent.sh
+  printf "$Line1\n$Line2\n$Line3\n$Line4\n$Line5\n" > ~/.ssh/agent.env
 }
 
 debug_ ssh.bash ends
